@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: #FAFAFA;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(164,195,210,0.18) 1px, transparent 0);
+  background-size: 22px 22px;
+  color: #3A3A3C;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 999px;
+}
+
+.font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Filet doré décoratif, motif récurrent Régence */
+.gilded-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D4AF37 20%, #D4AF37 80%, transparent);
+}
+
+.gilded-rule-thick {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  border-radius: 999px;
+}
+
+/* Cadre "médaillon" utilisé pour les cartes d'activités et de jeux */
+.medallion-card {
+  position: relative;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FCFAF6 100%);
+}
+.medallion-card::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  pointer-events: none;
+}
+
+.wax-seal {
+  background: radial-gradient(circle at 35% 30%, #E6CB6E, #A6862A 75%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
