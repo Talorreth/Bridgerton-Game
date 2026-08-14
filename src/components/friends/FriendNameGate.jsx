@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import Header from '../layout/Header'
 
-const NOBLE_TITLES = ['Duchesse', 'Marquise', 'Comtesse', 'Vicomtesse', 'Baronne', 'Dame']
+const NOBLE_TITLE_GROUPS = [
+  { label: 'Dames', titles: ['Duchesse', 'Marquise', 'Comtesse', 'Vicomtesse', 'Baronne', 'Dame'] },
+  { label: 'Messieurs', titles: ['Duc', 'Marquis', 'Comte', 'Vicomte', 'Baron', 'Chevalier'] },
+]
 
 export default function FriendNameGate({ onSubmit }) {
   const [name, setName] = useState('')
@@ -20,32 +23,38 @@ export default function FriendNameGate({ onSubmit }) {
       <Header
         eyebrow="Séance d'essai privée"
         title="Testez les épreuves"
-        subtitle="Vos temps serviront de repère avant l'arrivée de l'invitée. Choisissez votre rang et votre prénom pour commencer."
+        subtitle="Vos temps serviront de repère avant l'arrivée de l'invitée. Choisissez votre rang et votre nom pour commencer."
       />
 
       <form onSubmit={handleSubmit} className="mx-6 medallion-card rounded-2xl p-6 shadow-regency">
         <label className="block font-body text-xs uppercase tracking-[0.25em] text-royal-blue-dark">
           Votre titre de noblesse
         </label>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {NOBLE_TITLES.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTitle(t)}
-              className={`rounded-full border px-4 py-2 font-body text-sm transition-transform duration-150 ease-out-regency active:scale-95 ${
-                title === t
-                  ? 'border-gold bg-gold font-semibold text-ink shadow-regency'
-                  : 'border-gold/40 bg-white text-ink/70'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+
+        {NOBLE_TITLE_GROUPS.map((group) => (
+          <div key={group.label} className="mt-2">
+            <p className="mb-1.5 font-body text-[11px] italic text-ink/50">{group.label}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {group.titles.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTitle(t)}
+                  className={`rounded-full border px-4 py-2 font-body text-sm transition-transform duration-150 ease-out-regency active:scale-95 ${
+                    title === t
+                      ? 'border-gold bg-gold font-semibold text-ink shadow-regency'
+                      : 'border-gold/40 bg-white text-ink/70'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
 
         <label className="mt-5 block font-body text-xs uppercase tracking-[0.25em] text-royal-blue-dark">
-          Votre prénom
+          Votre nom
         </label>
         <input
           type="text"

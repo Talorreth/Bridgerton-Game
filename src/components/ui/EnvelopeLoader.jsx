@@ -63,7 +63,7 @@ export default function EnvelopeLoader({ onDone }) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 1.9 }}
           >
-            Le Vicomte Lindemans, épris, vous courtise en vous conviant dans son humble demeure pour un 
+            Le Vicomte Lindemans, fou amoureux, vous courtise en vous conviant dans son humble demeure pour un 
             week-end extraordinaire
           </motion.p>
         </motion.div>
