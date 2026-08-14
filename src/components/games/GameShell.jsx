@@ -7,7 +7,14 @@ import ZipGame from './ZipGame'
 import { PUZZLES } from '../../data/puzzles'
 import { formatTime } from '../../utils/formatTime'
 
-export default function GameShell({ game, timeThreshold, onClose, onWin }) {
+export default function GameShell({
+  game,
+  timeThreshold,
+  winButtonLabel = 'Révéler ma récompense',
+  closeOnWin = false,
+  onClose,
+  onWin,
+}) {
   const [phase, setPhase] = useState('playing') // 'playing' | 'result'
   const [attempt, setAttempt] = useState(0) // clé de remontage pour "réessayer"
   const [finalTime, setFinalTime] = useState(0)
@@ -134,10 +141,13 @@ export default function GameShell({ game, timeThreshold, onClose, onWin }) {
 
                 {won ? (
                   <button
-                    onClick={() => onWin(finalTime)}
+                    onClick={() => {
+                      onWin(finalTime)
+                      if (closeOnWin) onClose()
+                    }}
                     className="mt-6 w-full rounded-full bg-ink px-6 py-3 font-display text-sm tracking-wide text-cream shadow-regency transition-transform duration-150 ease-out-regency active:scale-[0.98]"
                   >
-                    Révéler ma récompense
+                    {winButtonLabel}
                   </button>
                 ) : (
                   <button

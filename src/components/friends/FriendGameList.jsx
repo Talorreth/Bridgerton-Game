@@ -75,6 +75,8 @@ export default function FriendGameList({ playerName, completed, recordCompletion
       {openGameIndex !== null && (
         <GameShell
           game={GAMES.find((g) => g.index === openGameIndex)}
+          winButtonLabel="Revenir aux autres mini-jeux"
+          closeOnWin
           onClose={() => setOpenGameIndex(null)}
           onWin={(time) => {
             recordCompletion(openGameIndex, time)
