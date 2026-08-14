@@ -17,7 +17,7 @@ export default function FriendNameGate({ onSubmit }) {
       <Header
         eyebrow="Séance d'essai privée"
         title="Testez les épreuves"
-        subtitle="Vos scores serviront de repère avant l'arrivée de l'invitée. Indiquez votre prénom pour commencer."
+        subtitle="Vos temps serviront de repère avant l'arrivée de l'invitée. Indiquez votre prénom pour commencer."
       />
 
       <form onSubmit={handleSubmit} className="mx-6 medallion-card rounded-2xl p-6 shadow-regency">

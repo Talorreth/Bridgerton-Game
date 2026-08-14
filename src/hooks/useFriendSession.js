@@ -8,7 +8,7 @@ const STORAGE_KEY = 'chateau_louise_friends_v1'
 
 const defaultState = () => ({
   playerName: '',
-  // { [gameIndex]: { score, submittedAt (ISO string), synced } }
+  // { [gameIndex]: { time (secondes), submittedAt (ISO string), synced } }
   completed: {},
 })
 
@@ -30,11 +30,13 @@ function saveState(state) {
   }
 }
 
-async function submitScore({ playerName, gameIndex, score }) {
+// Note : la colonne Supabase s'appelle "score" pour des raisons historiques,
+// mais elle contient désormais un temps en secondes.
+async function submitTime({ playerName, gameIndex, time }) {
   if (!supabase) return false
   const { error } = await supabase
     .from('scores')
-    .insert({ player_name: playerName, game_index: gameIndex, score, source: 'amie' })
+    .insert({ player_name: playerName, game_index: gameIndex, score: time, source: 'amie' })
   return !error
 }
 
@@ -50,17 +52,17 @@ export function useFriendSession() {
   }, [])
 
   const recordCompletion = useCallback(
-    (gameIndex, score) => {
+    (gameIndex, time) => {
       const submittedAt = new Date().toISOString()
       setState((prev) => ({
         ...prev,
         completed: {
           ...prev.completed,
-          [gameIndex]: { score, submittedAt, synced: false },
+          [gameIndex]: { time, submittedAt, synced: false },
         },
       }))
 
-      submitScore({ playerName: state.playerName, gameIndex, score }).then((ok) => {
+      submitTime({ playerName: state.playerName, gameIndex, time }).then((ok) => {
         if (!ok) return
         setState((cur) => ({
           ...cur,
@@ -74,12 +76,12 @@ export function useFriendSession() {
     [state.playerName]
   )
 
-  // Retente la synchronisation des scores restés en attente (ex. après une
+  // Retente la synchronisation des temps restés en attente (ex. après une
   // coupure réseau pendant la session).
   useEffect(() => {
     Object.entries(state.completed).forEach(([gameIndex, entry]) => {
       if (entry.synced) return
-      submitScore({ playerName: state.playerName, gameIndex: Number(gameIndex), score: entry.score }).then(
+      submitTime({ playerName: state.playerName, gameIndex: Number(gameIndex), time: entry.time }).then(
         (ok) => {
           if (!ok) return
           setState((cur) => ({

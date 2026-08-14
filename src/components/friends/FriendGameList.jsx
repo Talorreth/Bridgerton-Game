@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { CheckCircle2, Play } from 'lucide-react'
 import Header from '../layout/Header'
 import { GAMES } from '../../data/gamesConfig'
+import { formatTime } from '../../utils/formatTime'
 import GameShell from '../games/GameShell'
 
 const TYPE_LABELS = {
@@ -19,7 +20,7 @@ export default function FriendGameList({ playerName, completed, recordCompletion
       <Header
         eyebrow={`Merci ${playerName} !`}
         title="Les 6 épreuves"
-        subtitle="Enchaînez-les dans l'ordre de votre choix, sans attente. Vos scores sont enregistrés automatiquement."
+        subtitle="Enchaînez-les dans l'ordre de votre choix, sans attente. Vos temps sont enregistrés automatiquement."
       />
 
       <ol className="mx-6 flex flex-col gap-4">
@@ -49,11 +50,11 @@ export default function FriendGameList({ playerName, completed, recordCompletion
                 <span className="font-body text-xs text-ink/50">
                   {done ? (
                     <>
-                      Meilleur score : <strong className="text-ink/70">{done.score}</strong>
+                      Meilleur temps : <strong className="text-ink/70">{formatTime(done.time)}</strong>
                     </>
                   ) : (
                     <>
-                      Score exigé : <strong className="text-ink/70">{game.highScore}</strong>
+                      Temps requis : <strong className="text-ink/70">{formatTime(game.targetSeconds)}</strong>
                     </>
                   )}
                 </span>
@@ -75,8 +76,8 @@ export default function FriendGameList({ playerName, completed, recordCompletion
         <GameShell
           game={GAMES.find((g) => g.index === openGameIndex)}
           onClose={() => setOpenGameIndex(null)}
-          onWin={(score) => {
-            recordCompletion(openGameIndex, score)
+          onWin={(time) => {
+            recordCompletion(openGameIndex, time)
           }}
         />
       )}

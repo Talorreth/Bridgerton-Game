@@ -1,7 +1,7 @@
 // Généré par scripts/generatePuzzles.mjs — voir ce fichier pour regénérer.
 // Ces puzzles sont figés volontairement : toutes les joueuses (amies et
 // invitée) doivent résoudre exactement la même grille par épreuve pour que
-// les scores soient comparables.
+// les temps soient comparables.
 export const PUZZLES = {
   "0": {
     "regions": [

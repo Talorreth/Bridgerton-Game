@@ -1,39 +1,39 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, RotateCcw, Sparkles, Frown } from 'lucide-react'
+import { X, RotateCcw, Sparkles, Frown, Timer } from 'lucide-react'
 import QueensGame from './QueensGame'
 import TangoGame from './TangoGame'
 import ZipGame from './ZipGame'
 import { PUZZLES } from '../../data/puzzles'
+import { formatTime } from '../../utils/formatTime'
 
-function computeScore({ elapsedSeconds, errors }) {
-  const raw = 1000 - elapsedSeconds * 4 - errors * 30
-  return Math.max(0, Math.round(raw))
-}
-
-export default function GameShell({ game, winThreshold, onClose, onWin }) {
+export default function GameShell({ game, timeThreshold, onClose, onWin }) {
   const [phase, setPhase] = useState('playing') // 'playing' | 'result'
   const [attempt, setAttempt] = useState(0) // clé de remontage pour "réessayer"
-  const [errors, setErrors] = useState(0)
-  const [finalScore, setFinalScore] = useState(0)
+  const [finalTime, setFinalTime] = useState(0)
+  const [liveSeconds, setLiveSeconds] = useState(0)
   const startRef = useRef(Date.now())
 
+  // Chronomètre visible : se réinitialise à chaque nouvelle tentative et
+  // s'arrête dès que l'épreuve est résolue.
   useEffect(() => {
+    if (phase !== 'playing') return
     startRef.current = Date.now()
-    setErrors(0)
-  }, [attempt])
-
-  const handleError = () => setErrors((e) => e + 1)
+    setLiveSeconds(0)
+    const id = setInterval(() => {
+      setLiveSeconds(Math.floor((Date.now() - startRef.current) / 1000))
+    }, 1000)
+    return () => clearInterval(id)
+  }, [phase, attempt])
 
   const handleSolved = () => {
     const elapsedSeconds = Math.round((Date.now() - startRef.current) / 1000)
-    const score = computeScore({ elapsedSeconds, errors })
-    setFinalScore(score)
+    setFinalTime(elapsedSeconds)
     setPhase('result')
   }
 
-  const threshold = winThreshold ?? game.highScore
-  const won = finalScore >= threshold
+  const threshold = timeThreshold ?? game.targetSeconds
+  const won = finalTime <= threshold
 
   const GameComponent = useMemo(() => {
     if (game.type === 'queens') return QueensGame
@@ -82,6 +82,14 @@ export default function GameShell({ game, winThreshold, onClose, onWin }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
+                <div className="mb-4 flex justify-center">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-royal-blue/25 px-3 py-1.5 text-ink">
+                    <Timer size={14} className="text-royal-blue-dark" />
+                    <span className="font-body text-sm tabular-nums tracking-wide">
+                      {formatTime(liveSeconds)}
+                    </span>
+                  </div>
+                </div>
                 <p className="mb-4 text-center font-body text-sm italic text-ink/60">
                   {game.tagline}
                 </p>
@@ -90,7 +98,6 @@ export default function GameShell({ game, winThreshold, onClose, onWin }) {
                   dotCount={game.dotCount}
                   puzzle={PUZZLES[game.index]}
                   onSolved={handleSolved}
-                  onError={handleError}
                 />
               </motion.div>
             )}
@@ -121,13 +128,13 @@ export default function GameShell({ game, winThreshold, onClose, onWin }) {
                   {won ? 'Épreuve remportée !' : 'Pas tout à fait, chère invitée…'}
                 </h3>
                 <p className="mt-2 font-body text-sm text-ink/60">
-                  Votre score : <strong className="text-ink">{finalScore}</strong> — requis :{' '}
-                  <strong className="text-ink">{threshold}</strong>
+                  Votre temps : <strong className="text-ink">{formatTime(finalTime)}</strong> —
+                  maximum autorisé : <strong className="text-ink">{formatTime(threshold)}</strong>
                 </p>
 
                 {won ? (
                   <button
-                    onClick={() => onWin(finalScore)}
+                    onClick={() => onWin(finalTime)}
                     className="mt-6 w-full rounded-full bg-ink px-6 py-3 font-display text-sm tracking-wide text-cream shadow-regency transition-transform duration-150 ease-out-regency active:scale-[0.98]"
                   >
                     Révéler ma récompense

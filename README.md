@@ -29,15 +29,17 @@ npm run preview
 src/
   data/
     activities.js      → les 6 activités du séjour
-    gamesConfig.js      → les 6 mini-jeux (type, difficulté, high score, indice)
+    gamesConfig.js      → les 6 mini-jeux (type, difficulté, temps cible, indice)
+    puzzles.js          → les 6 grilles figées (générées par scripts/generatePuzzles.mjs)
     investigation.js    → suspects / lieux / objets / solution du mystère
   hooks/
     useProgress.js      → TOUTE la logique de progression + localStorage
     useCountdown.js      → compte à rebours réutilisable
   components/
     layout/              → TabBar, Header
-    games/                → GameHub, GameShell (timer + score), QueensGame,
-                            TangoGame, PatchesGame
+    games/                → GameHub, GameShell (chronomètre + condition de
+                            victoire), QueensGame, TangoGame, ZipGame
+    friends/               → mode de test caché (?mode=amies), voir plus bas
     activities/           → PlanningTab, ActivityCard, UnlockOverlay
     investigation/        → BureauEnquete, DeductionGrid, CluesList
     ui/                   → CountdownBadge, icônes d'activités
@@ -51,7 +53,7 @@ Tout est stocké dans `localStorage` sous la clé `chateau_louise_progress_v1` :
 
 ```js
 {
-  completedGames: { 0: { score: 812, completedAt: '2026-08-12T10:00:00.000Z' }, ... },
+  completedGames: { 0: { time: 82, completedAt: '2026-08-12T10:00:00.000Z' }, ... },
   unlockedActivities: [1, 2],
   pendingReveal: null, // index du jeu dont la récompense n'a pas encore été "vue"
   deductionGrid: { 's1__l1': 'check', ... },
@@ -65,16 +67,36 @@ Tout est stocké dans `localStorage` sous la clé `chateau_louise_progress_v1` :
   du jeu `N-1` (`completedGames[N-1].completedAt`) et on calcule
   `completedAt + 3 jours`. Tant que `Date.now()` n'a pas dépassé cette date,
   le jeu affiche un compte à rebours (`waiting`). Voir `useProgress.getGameStatus`.
-- **Condition de victoire** : chaque partie calcule un score
-  (`1000 - temps_en_secondes * 4 - erreurs * 30`, borné à 0) dans `GameShell`.
-  Si `score >= highScore` (défini dans `gamesConfig.js`), le niveau est validé,
-  l'activité correspondante est débloquée et l'indice est révélé (voir
-  `completeGame` dans `useProgress.js`).
+- **Condition de victoire** : `GameShell` affiche un chronomètre en direct
+  pendant la partie. Si le temps final est **inférieur ou égal** au temps
+  cible (`targetSeconds` dans `gamesConfig.js`, ou au meilleur temps des
+  amies si au moins une a testé ce jeu — voir plus bas), le niveau est
+  validé, l'activité correspondante est débloquée et l'indice est révélé
+  (voir `completeGame` dans `useProgress.js`).
 
-## Personnaliser les high scores / textes
+## Puzzles figés
 
-Tout se passe dans `src/data/gamesConfig.js` (scores, titres, indices) et
-`src/data/activities.js` (les 6 activités). Le mystère final (suspects, lieux,
+Les grilles des 6 épreuves sont générées une seule fois et figées dans
+`src/data/puzzles.js`, pour que toutes les joueuses (invitée et amies
+testeuses) résolvent exactement la même grille par épreuve — indispensable
+pour que les temps soient comparables. Pour regénérer de nouvelles grilles :
+`npm run puzzles:generate`.
+
+## Mode de test caché "amies" + classement Supabase
+
+Accessible uniquement via l'URL secrète `?mode=amies` (jamais atteignable
+depuis la navigation normale), ce mode permet à des amies de tester les 6
+épreuves sans délai d'attente et sans toucher à la progression réelle
+(stockage local séparé, `chateau_louise_friends_v1`). Leurs temps sont
+envoyés à une base Supabase (voir `src/lib/supabaseClient.js`,
+`VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` dans `.env.local`), et
+affichés dans l'onglet Épreuves normal comme temps à battre + classement
+détaillé (`GameHub.jsx`).
+
+## Personnaliser les temps cibles / textes
+
+Tout se passe dans `src/data/gamesConfig.js` (temps cibles, titres, indices)
+et `src/data/activities.js` (les 6 activités). Le mystère final (suspects, lieux,
 objets, solution) est dans `src/data/investigation.js`.
 
 ## Palette & typographie

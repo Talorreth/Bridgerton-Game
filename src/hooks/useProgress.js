@@ -7,7 +7,7 @@ const DEBUG_MODE = import.meta.env.VITE_DEBUG_UNLOCK_ALL_GAMES === 'true'
 
 const defaultState = () => {
   const baseState = {
-    // { [gameIndex]: { score, completedAt (ISO string) } }
+    // { [gameIndex]: { time (secondes), completedAt (ISO string) } }
     completedGames: {},
     // ids des activités débloquées
     unlockedActivities: [],
@@ -31,7 +31,7 @@ const defaultState = () => {
     const unlockedActivities = []
     
     GAMES.forEach((game) => {
-      completedGames[game.index] = { score: 1000, completedAt: now }
+      completedGames[game.index] = { time: game.targetSeconds, completedAt: now }
       unlockedActivities.push(game.activityId)
     })
     
@@ -106,7 +106,7 @@ export function useProgress() {
     [state.completedGames, state.unlockOverrides, state.mysterySolved, nextGameIndex]
   )
 
-  const completeGame = useCallback((gameIndex, score) => {
+  const completeGame = useCallback((gameIndex, time) => {
     setState((prev) => {
       if (prev.completedGames[gameIndex]) return prev // déjà validé, on n'écrase pas
       const game = GAMES.find((g) => g.index === gameIndex)
@@ -115,7 +115,7 @@ export function useProgress() {
         ...prev,
         completedGames: {
           ...prev.completedGames,
-          [gameIndex]: { score, completedAt: nowIso },
+          [gameIndex]: { time, completedAt: nowIso },
         },
         unlockedActivities: game
           ? Array.from(new Set([...prev.unlockedActivities, game.activityId]))
@@ -148,7 +148,7 @@ export function useProgress() {
         ...prev,
         completedGames: {
           ...prev.completedGames,
-          [gameIndex]: { score: game.highScore, completedAt: nowIso },
+          [gameIndex]: { time: game.targetSeconds, completedAt: nowIso },
         },
         unlockedActivities: Array.from(new Set([...prev.unlockedActivities, game.activityId])),
         unlockOverrides: prev.unlockOverrides.filter((idx) => idx !== gameIndex),
@@ -181,7 +181,7 @@ export function useProgress() {
       const unlockedActivities = new Set(prev.unlockedActivities)
       GAMES.forEach((game) => {
         if (!completedGames[game.index]) {
-          completedGames[game.index] = { score: game.highScore, completedAt: nowIso }
+          completedGames[game.index] = { time: game.targetSeconds, completedAt: nowIso }
         }
         unlockedActivities.add(game.activityId)
       })

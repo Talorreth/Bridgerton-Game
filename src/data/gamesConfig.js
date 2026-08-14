@@ -1,6 +1,6 @@
 // Configuration des 6 mini-jeux séquentiels.
 // type: 'queens' | 'tango' | 'zip'
-// highScore: score à égaler ou dépasser pour valider le niveau (fixé par le créateur)
+// targetSeconds: temps maximum (en secondes) pour valider le niveau (fixé par le créateur)
 // unlockDelayDays: délai avant de pouvoir rejouer/débloquer le jeu suivant après complétion du jeu précédent
 
 export const UNLOCK_DELAY_DAYS = 3
@@ -12,7 +12,7 @@ export const GAMES = [
     title: 'Le Défi des Couronnes',
     tagline: 'Placez les couronnes sans qu’aucune ne croise le regard d’une autre.',
     gridSize: 5,
-    highScore: 650,
+    targetSeconds: 90,
     activityId: 1,
     clue: {
       title: 'Premier feuillet',
@@ -26,7 +26,7 @@ export const GAMES = [
     title: 'L’Équilibre Céleste',
     tagline: 'Harmonisez Soleils et Lunes : jamais trois de suite, jamais de déséquilibre.',
     gridSize: 6,
-    highScore: 600,
+    targetSeconds: 100,
     activityId: 2,
     clue: {
       title: 'Second feuillet',
@@ -41,7 +41,7 @@ export const GAMES = [
     tagline: 'Tracez le chemin secret qui traverse chaque case et relie les chiffres dans l’ordre.',
     gridSize: 5,
     dotCount: 5,
-    highScore: 550,
+    targetSeconds: 110,
     activityId: 3,
     clue: {
       title: 'Troisième feuillet',
@@ -55,7 +55,7 @@ export const GAMES = [
     title: 'Le Second Défi des Couronnes',
     tagline: 'La grille s’agrandit, la vigilance redouble.',
     gridSize: 6,
-    highScore: 700,
+    targetSeconds: 75,
     activityId: 4,
     clue: {
       title: 'Quatrième feuillet',
@@ -69,7 +69,7 @@ export const GAMES = [
     title: 'Le Second Équilibre Céleste',
     tagline: 'Six par six, l’équilibre du ciel doit régner sur chaque ligne.',
     gridSize: 6,
-    highScore: 680,
+    targetSeconds: 80,
     activityId: 5,
     clue: {
       title: 'Cinquième feuillet',
@@ -84,7 +84,7 @@ export const GAMES = [
     tagline: 'Un ultime chemin, plus long, avant que le coupable ne soit démasqué.',
     gridSize: 6,
     dotCount: 7,
-    highScore: 620,
+    targetSeconds: 95,
     activityId: 6,
     clue: {
       title: 'Feuillet final',

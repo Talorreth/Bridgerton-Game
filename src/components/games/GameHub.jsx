@@ -6,6 +6,7 @@ import CountdownBadge from '../ui/CountdownBadge'
 import { GAMES } from '../../data/gamesConfig'
 import { ACTIVITIES } from '../../data/activities'
 import { supabase } from '../../lib/supabaseClient'
+import { formatTime } from '../../utils/formatTime'
 import GameShell from './GameShell'
 
 const TYPE_LABELS = {
@@ -14,30 +15,33 @@ const TYPE_LABELS = {
   zip: 'Le Sentier Dérobé',
 }
 
-// Agrège les scores "amie" par jeu : meilleur score par prénom, trié
-// décroissant, pour l'affichage du classement détaillé.
-function groupFriendScoresByGame(rows) {
+// Agrège les temps "amie" par jeu : meilleur (= le plus rapide) temps par
+// prénom, trié croissant, pour l'affichage du classement détaillé.
+// Note : la colonne Supabase s'appelle toujours "score" pour des raisons
+// historiques, mais elle contient désormais un temps en secondes.
+function groupFriendTimesByGame(rows) {
   const byGame = {}
   for (const row of rows) {
     const bucket = (byGame[row.game_index] ??= new Map())
-    const prevBest = bucket.get(row.player_name) ?? -Infinity
-    if (row.score > prevBest) bucket.set(row.player_name, row.score)
+    const prevBest = bucket.get(row.player_name) ?? Infinity
+    if (row.score < prevBest) bucket.set(row.player_name, row.score)
   }
   const result = {}
   for (const [gameIndex, bestByPlayer] of Object.entries(byGame)) {
     const entries = [...bestByPlayer.entries()]
-      .map(([name, score]) => ({ name, score }))
-      .sort((a, b) => b.score - a.score)
-    result[gameIndex] = { entries, best: entries[0].score }
+      .map(([name, time]) => ({ name, time }))
+      .sort((a, b) => a.time - b.time)
+    result[gameIndex] = { entries, best: entries[0].time }
   }
   return result
 }
 
-// Le score des amies remplace le seuil fixe du jeu dès qu'au moins une amie
-// l'a joué ; sinon on retombe sur le highScore statique de gamesConfig.js.
+// Le temps le plus rapide des amies remplace le temps cible fixe du jeu dès
+// qu'au moins une amie l'a joué ; sinon on retombe sur targetSeconds
+// (gamesConfig.js).
 function getEffectiveThreshold(game, friendStatsByGame) {
   const friendBest = friendStatsByGame[game.index]?.best
-  return friendBest != null ? friendBest : game.highScore
+  return friendBest != null ? friendBest : game.targetSeconds
 }
 
 export default function GameHub({ getGameStatus, completeGame }) {
@@ -58,14 +62,14 @@ export default function GameHub({ getGameStatus, completeGame }) {
     }
   }, [])
 
-  const friendStatsByGame = useMemo(() => groupFriendScoresByGame(friendScores), [friendScores])
+  const friendStatsByGame = useMemo(() => groupFriendTimesByGame(friendScores), [friendScores])
 
   return (
     <div className="pb-28">
       <Header
         eyebrow="Les épreuves de la Cour"
         title="Six défis à relever"
-        subtitle="Une épreuve à la fois. Égalez ou dépassez le score exigé pour être digne de la suite."
+        subtitle="Une épreuve à la fois. Résolvez la grille avant que le temps imparti ne s'achève."
       />
 
       <ol className="mx-6 flex flex-col gap-4">
@@ -106,7 +110,7 @@ export default function GameHub({ getGameStatus, completeGame }) {
 
               <div className="mt-4 flex items-center justify-between">
                 <span className="font-body text-xs text-ink/50">
-                  Score exigé : <strong className="text-ink/70">{threshold}</strong>
+                  Temps maximum : <strong className="text-ink/70">{formatTime(threshold)}</strong>
                 </span>
 
                 {status.status === 'available' && (
@@ -125,7 +129,7 @@ export default function GameHub({ getGameStatus, completeGame }) {
 
                 {status.status === 'completed' && (
                   <span className="font-body text-xs font-semibold text-royal-blue-dark">
-                    Score : {status.score}
+                    Temps : {formatTime(status.time)}
                   </span>
                 )}
               </div>
@@ -138,7 +142,7 @@ export default function GameHub({ getGameStatus, completeGame }) {
                   >
                     <span className="flex items-center gap-1.5">
                       <Users size={13} />
-                      Scores des amies ({friendStats.entries.length})
+                      Temps des amies ({friendStats.entries.length})
                     </span>
                     <ChevronDown
                       size={14}
@@ -153,7 +157,7 @@ export default function GameHub({ getGameStatus, completeGame }) {
                           className="flex items-center justify-between font-body text-xs text-ink/60"
                         >
                           <span>{entry.name}</span>
-                          <span className="font-semibold text-ink/80">{entry.score}</span>
+                          <span className="font-semibold text-ink/80">{formatTime(entry.time)}</span>
                         </li>
                       ))}
                     </ul>
@@ -168,10 +172,10 @@ export default function GameHub({ getGameStatus, completeGame }) {
       {openGameIndex !== null && (
         <GameShell
           game={GAMES.find((g) => g.index === openGameIndex)}
-          winThreshold={getEffectiveThreshold(GAMES.find((g) => g.index === openGameIndex), friendStatsByGame)}
+          timeThreshold={getEffectiveThreshold(GAMES.find((g) => g.index === openGameIndex), friendStatsByGame)}
           onClose={() => setOpenGameIndex(null)}
-          onWin={(score) => {
-            completeGame(openGameIndex, score)
+          onWin={(time) => {
+            completeGame(openGameIndex, time)
           }}
         />
       )}
