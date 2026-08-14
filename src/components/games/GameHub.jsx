@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Lock, CheckCircle2, Play, ChevronDown, Users } from 'lucide-react'
+import { Lock, CheckCircle2, Play, ChevronDown, ScrollText } from 'lucide-react'
 import Header from '../layout/Header'
 import CountdownBadge from '../ui/CountdownBadge'
 import { GAMES } from '../../data/gamesConfig'
@@ -141,8 +141,8 @@ export default function GameHub({ getGameStatus, completeGame }) {
                     className="flex w-full items-center justify-between font-body text-xs text-royal-blue-dark"
                   >
                     <span className="flex items-center gap-1.5">
-                      <Users size={13} />
-                      Temps des amies ({friendStats.entries.length})
+                      <ScrollText size={13} />
+                      Chronique de la Cour ({friendStats.entries.length})
                     </span>
                     <ChevronDown
                       size={14}
