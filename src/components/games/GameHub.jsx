@@ -101,7 +101,7 @@ export default function GameHub({ getGameStatus, completeGame }) {
                   <p className="mt-1 font-body text-sm text-ink/60">{game.tagline}</p>
                   {activity && (
                     <p className="mt-2 font-body text-xs italic text-gold-dark">
-                      Débloque : {activity.title}
+                      Débloque : {activity.teaser}
                     </p>
                   )}
                 </div>

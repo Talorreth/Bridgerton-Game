@@ -1,5 +1,9 @@
 // Les 6 activités du séjour, débloquées une à une par les mini-jeux.
 // gameIndex fait le lien avec data/gamesConfig.js (0 à 5).
+// teaser : amorce cryptique affichée sur la carte du mini-jeu avant que
+// l'activité ne soit débloquée (voir GameHub.jsx) — ne doit rien révéler du
+// contenu réel, contrairement à title/place/description qui n'apparaissent
+// qu'après (UnlockOverlay, PlanningTab).
 
 export const ACTIVITIES = [
   {
@@ -9,6 +13,7 @@ export const ACTIVITIES = [
     place: 'Le Clos Lucé',
     description:
       "Une promenade guidée dans la dernière demeure de Léonard de Vinci, entre jardins d'invention et ateliers secrets.",
+    teaser: "Un lieu où l'esprit s'égare autant que le cœur.",
     icon: 'landmark',
   },
   {
@@ -18,6 +23,7 @@ export const ACTIVITIES = [
     place: 'Parc du Château',
     description:
       "Une marche paisible sous les frondaisons centenaires, ponctuée de haltes et de vues sur la Loire.",
+    teaser: "Une promenade qui n'a rien d'anodin.",
     icon: 'trees',
   },
   {
@@ -27,6 +33,7 @@ export const ACTIVITIES = [
     place: 'Spa du Domaine',
     description:
       "Un moment suspendu entre vapeurs parfumées et soins ancestraux, dignes des plus grandes dames de la Cour.",
+    teaser: 'Un moment intime pour lequel Lady Whistledown vous envierait.',
     icon: 'droplets',
   },
   {
@@ -36,6 +43,7 @@ export const ACTIVITIES = [
     place: 'Orangerie',
     description:
       "Un brunch raffiné sous verrière, entre pâtisseries fines, thés rares et confitures du domaine.",
+    teaser: 'Un rendez-vous que seules les premières lueurs du jour connaissent.',
     icon: 'croissant',
   },
   {
@@ -45,6 +53,7 @@ export const ACTIVITIES = [
     place: 'Domaine Taille aux Loups',
     description:
       "Une dégustation commentée des plus beaux crus de Vouvray et Montlouis, dans les caves troglodytiques.",
+    teaser: 'Une activité qui monte à la tête... et au cœur.',
     icon: 'wine',
   },
   {
@@ -54,6 +63,7 @@ export const ACTIVITIES = [
     place: "Table d'Amphitryon",
     description:
       "Le point d'orgue du séjour : un banquet gastronomique à plusieurs services, servi dans la grande salle du château.",
+    teaser: 'Le clou de la saison, chère lectrice.',
     icon: 'crown',
   },
 ]
