@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { GAMES, UNLOCK_DELAY_DAYS } from '../data/gamesConfig'
+import { GAMES } from '../data/gamesConfig'
 
 const STORAGE_KEY = 'chateau_louise_progress_v1'
-const DAY_MS = 24 * 60 * 60 * 1000
 const DEBUG_MODE = import.meta.env.VITE_DEBUG_UNLOCK_ALL_GAMES === 'true'
+// La dernière épreuve : son activité exige, en plus de sa réussite, que le
+// mystère soit résolu (voir completeGame / solveMystery).
+const FINAL_GAME_INDEX = GAMES.length - 1
 
 const defaultState = () => {
   const baseState = {
@@ -96,7 +98,8 @@ export function useProgress() {
       const previous = state.completedGames[gameIndex - 1]
       if (!previous) return { status: 'locked' }
 
-      const unlockAt = new Date(previous.completedAt).getTime() + UNLOCK_DELAY_DAYS * DAY_MS
+      const game = GAMES.find((g) => g.index === gameIndex)
+      const unlockAt = game?.unlockDate ? new Date(game.unlockDate).getTime() : 0
       const now = Date.now()
       if (now >= unlockAt || state.unlockOverrides.includes(gameIndex)) {
         return { status: 'available' }
@@ -111,13 +114,17 @@ export function useProgress() {
       if (prev.completedGames[gameIndex]) return prev // déjà validé, on n'écrase pas
       const game = GAMES.find((g) => g.index === gameIndex)
       const nowIso = new Date().toISOString()
+      // La dernière épreuve ne débloque son activité que si le mystère est
+      // déjà résolu (double condition) ; les autres se débloquent normalement.
+      const isFinalGame = gameIndex === FINAL_GAME_INDEX
+      const unlocksActivity = game && (!isFinalGame || prev.mysterySolved)
       return {
         ...prev,
         completedGames: {
           ...prev.completedGames,
           [gameIndex]: { time, completedAt: nowIso },
         },
-        unlockedActivities: game
+        unlockedActivities: unlocksActivity
           ? Array.from(new Set([...prev.unlockedActivities, game.activityId]))
           : prev.unlockedActivities,
         unlockOverrides: prev.unlockOverrides.filter((idx) => idx !== gameIndex),
@@ -200,17 +207,23 @@ export function useProgress() {
     }))
   }, [])
 
-  // Résoudre l'enquête débloque instantanément toutes les activités du
-  // séjour, mais laisse les épreuves non réussies jouables (voir
+  // Résoudre l'enquête débloque instantanément les activités des épreuves
+  // 1 à 5, mais laisse les épreuves non réussies jouables (voir
   // getGameStatus) — ce n'est pas un raccourci qui prive l'invitée du jeu.
+  // La dernière activité, elle, n'apparaît que si la dernière épreuve est
+  // elle aussi déjà réussie (double condition).
   const solveMystery = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      mysterySolved: true,
-      unlockedActivities: Array.from(
-        new Set([...prev.unlockedActivities, ...GAMES.map((g) => g.activityId)])
-      ),
-    }))
+    setState((prev) => {
+      const finalGameDone = Boolean(prev.completedGames[FINAL_GAME_INDEX])
+      const activityIdsToUnlock = GAMES.filter(
+        (g) => g.index !== FINAL_GAME_INDEX || finalGameDone
+      ).map((g) => g.activityId)
+      return {
+        ...prev,
+        mysterySolved: true,
+        unlockedActivities: Array.from(new Set([...prev.unlockedActivities, ...activityIdsToUnlock])),
+      }
+    })
   }, [])
 
   // Une accusation ratée : referme la grille classique, n'ouvre plus que la

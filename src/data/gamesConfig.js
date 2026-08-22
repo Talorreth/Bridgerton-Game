@@ -1,9 +1,9 @@
 // Configuration des 6 mini-jeux séquentiels.
 // type: 'queens' | 'tango' | 'zip'
 // targetSeconds: temps maximum (en secondes) pour valider le niveau (fixé par le créateur)
-// unlockDelayDays: délai avant de pouvoir rejouer/débloquer le jeu suivant après complétion du jeu précédent
-
-export const UNLOCK_DELAY_DAYS = 3
+// unlockDate: date calendaire (YYYY-MM-DD) à partir de laquelle le jeu peut
+// s'ouvrir — en plus d'exiger que le jeu précédent soit réussi. Calendrier
+// étalé du 23 août (ouverture) au 5 septembre (dernière épreuve).
 
 export const GAMES = [
   {
@@ -27,6 +27,7 @@ export const GAMES = [
     tagline: 'Harmonisez Soleils et Lunes : jamais trois de suite, jamais de déséquilibre.',
     gridSize: 6,
     targetSeconds: 100,
+    unlockDate: '2026-08-26',
     activityId: 2,
     clue: {
       title: 'Second feuillet',
@@ -42,6 +43,7 @@ export const GAMES = [
     gridSize: 5,
     dotCount: 5,
     targetSeconds: 110,
+    unlockDate: '2026-08-28',
     activityId: 3,
     clue: {
       title: 'Troisième feuillet',
@@ -56,6 +58,7 @@ export const GAMES = [
     tagline: 'La grille s’agrandit, la vigilance redouble.',
     gridSize: 6,
     targetSeconds: 75,
+    unlockDate: '2026-08-31',
     activityId: 4,
     clue: {
       title: 'Quatrième feuillet',
@@ -70,6 +73,7 @@ export const GAMES = [
     tagline: 'Six par six, l’équilibre du ciel doit régner sur chaque ligne.',
     gridSize: 6,
     targetSeconds: 80,
+    unlockDate: '2026-09-02',
     activityId: 5,
     clue: {
       title: 'Cinquième feuillet',
@@ -85,6 +89,7 @@ export const GAMES = [
     gridSize: 6,
     dotCount: 7,
     targetSeconds: 95,
+    unlockDate: '2026-09-05',
     activityId: 6,
     clue: {
       title: 'Feuillet final',

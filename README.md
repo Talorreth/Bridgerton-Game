@@ -63,16 +63,21 @@ Tout est stocké dans `localStorage` sous la clé `chateau_louise_progress_v1` :
 
 - **Un seul jeu accessible à la fois** : `nextGameIndex = completedCount` (le
   jeu 0 est toujours accessible en premier).
-- **Timer de 3 jours** : pour le jeu `N` (N > 0), on lit la date de complétion
-  du jeu `N-1` (`completedGames[N-1].completedAt`) et on calcule
-  `completedAt + 3 jours`. Tant que `Date.now()` n'a pas dépassé cette date,
-  le jeu affiche un compte à rebours (`waiting`). Voir `useProgress.getGameStatus`.
+- **Calendrier fixe** : chaque jeu `N` (N > 0) a une date de déblocage
+  (`unlockDate` dans `gamesConfig.js`, format `YYYY-MM-DD`), en plus d'exiger
+  que le jeu `N-1` soit déjà réussi. Tant que `Date.now()` n'a pas atteint
+  cette date, le jeu affiche un compte à rebours (`waiting`). Voir
+  `useProgress.getGameStatus`. Le calendrier actuel s'étale du 23 août
+  (ouverture) au 5 septembre (dernière épreuve).
 - **Condition de victoire** : `GameShell` affiche un chronomètre en direct
   pendant la partie. Si le temps final est **inférieur ou égal** au temps
   cible (`targetSeconds` dans `gamesConfig.js`, ou au meilleur temps des
   amies si au moins une a testé ce jeu — voir plus bas), le niveau est
-  validé, l'activité correspondante est débloquée et l'indice est révélé
-  (voir `completeGame` dans `useProgress.js`).
+  validé et l'indice est révélé (voir `completeGame` dans `useProgress.js`).
+- **Double condition sur la dernière activité** : l'activité de la 6ᵉ épreuve
+  ne se débloque que si le jeu est réussi **et** que le mystère est résolu
+  (`mysterySolved`). Si l'une des deux conditions manque encore,
+  `UnlockOverlay` révèle l'indice mais pas l'activité.
 
 ## Puzzles figés
 

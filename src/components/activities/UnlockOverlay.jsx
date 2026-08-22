@@ -10,7 +10,7 @@ const petalPositions = Array.from({ length: 14 }, (_, i) => ({
 }))
 
 export default function UnlockOverlay({ activity, clue, onClose }) {
-  const Icon = ACTIVITY_ICONS[activity?.icon]
+  const Icon = activity ? ACTIVITY_ICONS[activity.icon] : null
 
   return (
     <motion.div
@@ -47,14 +47,30 @@ export default function UnlockOverlay({ activity, clue, onClose }) {
           <Sparkles size={26} className="text-cream" />
         </motion.div>
 
-        <p className="font-body text-xs uppercase tracking-[0.3em] text-gold-dark">
-          Activité débloquée
-        </p>
-        <div className="mt-2 flex items-center justify-center gap-2">
-          {Icon && <Icon size={18} className="text-royal-blue-dark" />}
-          <h3 className="font-display text-lg font-semibold text-ink">{activity?.title}</h3>
-        </div>
-        <p className="mt-1 font-body text-sm text-ink/60">{activity?.place}</p>
+        {activity ? (
+          <>
+            <p className="font-body text-xs uppercase tracking-[0.3em] text-gold-dark">
+              Activité débloquée
+            </p>
+            <div className="mt-2 flex items-center justify-center gap-2">
+              {Icon && <Icon size={18} className="text-royal-blue-dark" />}
+              <h3 className="font-display text-lg font-semibold text-ink">{activity.title}</h3>
+            </div>
+            <p className="mt-1 font-body text-sm text-ink/60">{activity.place}</p>
+          </>
+        ) : (
+          <>
+            <p className="font-body text-xs uppercase tracking-[0.3em] text-gold-dark">
+              Feuillet révélé
+            </p>
+            <h3 className="mt-2 font-display text-lg font-semibold text-ink">
+              Il reste à percer le mystère…
+            </h3>
+            <p className="mt-1 font-body text-sm text-ink/60">
+              La dernière activité du séjour se dévoilera une fois le coupable démasqué.
+            </p>
+          </>
+        )}
 
         <div className="my-5 gilded-rule" />
 

@@ -119,7 +119,8 @@ export default function HomeTab({
       </div>
 
       <p className="mx-6 mt-6 text-center font-body text-xs italic text-ink/40">
-        Une épreuve est ouverte tous les 3 jours. Revenez souvent, l'aristocratie est patiente.
+        De nouvelles épreuves s'ouvrent au fil des jours, jusqu'au 5 septembre. Revenez souvent,
+        l'aristocratie est patiente.
       </p>
 
       <AnimatePresence>

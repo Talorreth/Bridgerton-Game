@@ -38,7 +38,13 @@ export default function App() {
   } = useProgress()
 
   const pendingGame = state.pendingReveal !== null ? GAMES.find((g) => g.index === state.pendingReveal) : null
-  const pendingActivity = pendingGame ? ACTIVITIES.find((a) => a.id === pendingGame.activityId) : null
+  // null si l'épreuve est réussie mais que son activité n'est pas encore
+  // débloquée (cas de la dernière épreuve tant que le mystère n'est pas
+  // résolu) — voir UnlockOverlay, qui gère ce cas sans afficher d'activité.
+  const pendingActivity =
+    pendingGame && state.unlockedActivities.includes(pendingGame.activityId)
+      ? ACTIVITIES.find((a) => a.id === pendingGame.activityId)
+      : null
 
   return (
     <div className="mx-auto min-h-screen max-w-md bg-cream">
@@ -84,7 +90,7 @@ export default function App() {
       <TabBar active={tab} onChange={setTab} />
 
       <AnimatePresence>
-        {pendingGame && pendingActivity && (
+        {pendingGame && (
           <UnlockOverlay
             activity={pendingActivity}
             clue={pendingGame.clue}
